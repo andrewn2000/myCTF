@@ -3,11 +3,8 @@ layout: post
 title:  "THM: Simple CTF!"
 date:   2024-01-20 13:50:01 -0600
 categories: TryHackMe
+image: /assets/img/SimpleCTFcover.png
 ---
-
-
-![Image of ctf]({{site.baseurl}}/assets/img/SimpleCTFcover.png)
-
 
 Set variable for $IPADDR
 ```

