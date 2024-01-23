@@ -5,7 +5,9 @@ date:   2024-01-20 13:50:01 -0600
 categories: TryHackMe
 ---
 
-![Image of ctf](/assets/img/SimpleCTFcover.png)
+
+![Image of ctf]({{site.baseurl}}/assets/img/SimpleCTFcover.png)
+
 
 Set variable for $IPADDR
 ```
@@ -138,7 +140,7 @@ by OJ Reeves (@TheColonial) & Christian Mehlmauer (@_FireFart_)
 
 Looks like we have /simple
 Browse to Website $IPADDR/simple
-![Image of SimpleCMS](/assets/img/SimpleCTFSimpleCMS.jpg)
+![Image of SimpleCMS]({{site.baseurl}}/assets/img/SimpleCTFSimpleCMS.jpg)
 
 On bottom, we have SimpleCMS
 
@@ -388,3 +390,13 @@ root.txt
 root@Machine:~# cat /root/root.txt
 [REDACTED]
 ```
+
+TCM Security used dirsearch
+https://github.com/maurosoria/dirsearch
+
+Install with git: git clone https://github.com/maurosoria/dirsearch.git --depth 1 (RECOMMENDED)
+
+```
+python3 dirsearch.py -u $IPADDR -e php,html -x 400,401,403
+```
+Unfortunately, for the dirsearch.py gives error in AttackBox so NOT recommended.
