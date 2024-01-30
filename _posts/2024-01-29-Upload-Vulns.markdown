@@ -2,7 +2,8 @@
 layout: post
 title:  "Upload Vulnerabilities"
 date:   2029-01-24 13:50:01 -0600
-categories: Discussions
+categories: TryHackMe
+image: /assets/img/uploadvulns.png
 ---
 
 first edit the host file and begin
@@ -109,5 +110,4 @@ tmp
 usr
 var
 $ cat /var/www/flag.txt
-
 ```
