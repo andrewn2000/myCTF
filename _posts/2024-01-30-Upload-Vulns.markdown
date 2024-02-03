@@ -346,7 +346,10 @@ by OJ Reeves (@TheColonial) & Christian Mehlmauer (@_FireFart_)
 /UAD.jpg (Status: 200)
 ===============================================================
 2024/02/01 01:22:07 Finished
-```
+
 
 cat /var/www/flag.txt
-THM{NzRlYTUwNTIzODMwMWZhMzBiY2JlZWU2}
+THM{NzRlY{READACTED}
+
+```
+DONE !
