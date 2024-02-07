@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "TCM: Linux Priviledge Escalation"
-date:   2024-02-02 13:50:01 -0600
+date:   2024-02-04 13:50:01 -0600
 categories: TCM
 image: /assets/img/linux-privescalation.png
 ---
