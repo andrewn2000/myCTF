@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "THM: Bluer"
+title:  "THM: Blue"
 date:   2024-02-07 18:50:01 -0600
 categories: TryHackMe
 image: /assets/img/blue.jpg
