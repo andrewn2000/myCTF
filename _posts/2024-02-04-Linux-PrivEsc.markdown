@@ -5,7 +5,7 @@ date:   2024-02-04 13:50:01 -0600
 categories: TCM
 image: /assets/img/linux-privescalation.png
 ---
-Linux PrivEsc Lab - https://tryhackme.com/room/linuxprivescarena
+[Linux PrivEsc Lab](https://tryhackme.com/room/linuxprivescarena)
 # Sudo & SUID
 
 Following the course, it starts to get more difficult, when going through the Sudo in 
