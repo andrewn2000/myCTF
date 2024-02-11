@@ -5,6 +5,7 @@ date:   2024-02-10 12:50:01 -0600
 categories: TryHackMe
 ---
 [Ultratech](https://tryhackme.com/room/ultratech1)
+The basics of Penetration Testing, Enumeration, Privilege Escalation and WebApp testing
 
 first edit the host file and begin
 

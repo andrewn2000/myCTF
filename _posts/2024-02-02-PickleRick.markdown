@@ -5,6 +5,8 @@ date:   2024-02-02 13:50:01 -0600
 categories: TryHackMe
 image: /assets/img/picklerick.png
 ---
+[UPickle Rick](https://tryhackme.com/room/picklerick)
+ Rick and Morty CTF. Help turn Rick back into a human!
 ## Bad moves
 For some reason I forgot all my web enumeration skills.  This is the thing with keeping up with documentation and reviewing.  
 

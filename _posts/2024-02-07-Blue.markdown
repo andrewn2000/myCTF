@@ -5,6 +5,9 @@ date:   2024-02-07 18:50:01 -0600
 categories: TryHackMe
 image: /assets/img/blue.jpg
 ---
+[Blue](https://tryhackme.com/room/blue)
+Deploy & hack into a Windows machine, leveraging common misconfigurations issue
+
 Initial nmap scan
 ```
 root@ip-10-10-156-21:~# nmap -sV 10.10.231.240

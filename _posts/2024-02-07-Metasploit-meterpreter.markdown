@@ -5,6 +5,9 @@ date:   2024-02-07 13:50:01 -0600
 categories: TryHackMe
 image: /assets/img/metasploit-meterpreter.png
 ---
+[etasploit: Meterpreter](https://tryhackme.com/room/meterpreter)
+Take a deep dive into Meterpreter, and see how in-memory payloads can be used for post-exploitation.
+
 I can't believe it!  Maybe I'm finally getting this hacking thing!  
 Aside from the password of jchamers I was able to get most of the answers myself!
 

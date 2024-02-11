@@ -5,6 +5,9 @@ date:   2024-02-06 13:50:01 -0600
 categories: TryHackMe
 image: /assets/img/crypto101.png
 ---
+[Encryption - Crypto 101](https://tryhackme.com/room/encryptioncrypto101)
+An introduction to encryption, as part of a series on crypto
+
 Blew thru most of this room but here what was interesting to take note
 
 ## Task 9 SSH Authentication

@@ -5,9 +5,10 @@ date:   2024-01-31 13:50:01 -0600
 categories: TryHackMe
 image: /assets/img/uploadvulns.png
 ---
+[Upload Vulnerabilities](https://tryhackme.com/room/uploadvulns)
+Tutorial room exploring some basic file-upload vulnerabilities in websites
 
-first edit the host file and begin
-
+First edit the host file and begin
 ``` bash
 #/bin/sh
 echo "10.10.232.106    overwrite.uploadvulns.thm shell.uploadvulns.thm java.uploadvulns.thm annex.uploadvulns.thm magic.uploadvulns.thm jewel.uploadvulns.thm demo.uploadvulns.thm" >> /etc/hosts

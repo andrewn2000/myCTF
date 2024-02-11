@@ -5,6 +5,8 @@ date:   2024-01-20 13:50:01 -0600
 categories: TryHackMe
 image: /assets/img/SimpleCTFcover.png
 ---
+[Simple CTF](https://tryhackme.com/room/easyctf)
+Beginner level ctf
 
 Set variable for $IPADDR
 ```

@@ -5,6 +5,10 @@ date:   2024-01-23 12:50:01 -0600
 categories: TryHackMe
 image: /assets/img/Blog.png
 ---
+[Title](https://tryhackme.com/room/blog)
+Billy Joel made a Wordpress blog!
+
+
 Even though this said you could do this room right after the web-enumeration room I had a hard time.
 ```
 echo "10.10.229.85 blog.thm" >> /etc/hosts

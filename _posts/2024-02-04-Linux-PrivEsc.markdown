@@ -6,6 +6,7 @@ categories: TCM
 image: /assets/img/linux-privescalation.png
 ---
 [Linux PrivEsc Lab](https://tryhackme.com/room/linuxprivescarena)
+Students will learn how to escalate privileges using a very vulnerable Linux VM. SSH is open. Your credentials are TCM:Hacker123
 # Sudo & SUID
 
 Following the course, it starts to get more difficult, when going through the Sudo in 

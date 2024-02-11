@@ -5,6 +5,7 @@ date:   2024-01-22 13:50:01 -0600
 categories: TryHackMe
 image: /assets/img/web-enumeration.jpeg
 ---
+[Web Enumeration](https://tryhackme.com/room/webenumerationv2)
 Learn the methodology of enumerating websites by using tools such as Gobuster, Nikto and WPScan
 
 I really enjoyed this room since it has 3 enumerating tasks that I was able to complete by myself
